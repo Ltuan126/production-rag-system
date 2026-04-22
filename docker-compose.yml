@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  backend:
+    image: python:3.11-slim
+    working_dir: /app
+    command: ["bash", "-lc", "echo 'Backend service scaffolded. Add FastAPI app startup command.' && tail -f /dev/null"]
+    volumes:
+      - ./backend:/app
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    command: ["sh", "-lc", "echo 'Frontend service scaffolded. Add React app startup command.' && tail -f /dev/null"]
+    volumes:
+      - ./frontend/react-app:/app
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
+volumes:
+  chroma_data:
