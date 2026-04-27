@@ -2,11 +2,13 @@ version: "3.9"
 
 services:
   backend:
-    image: python:3.11-slim
-    working_dir: /app
-    command: ["bash", "-lc", "echo 'Backend service scaffolded. Add FastAPI app startup command.' && tail -f /dev/null"]
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    working_dir: /workspace/backend
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
     volumes:
-      - ./backend:/app
+      - .:/workspace
     env_file:
       - .env
     ports:
@@ -15,11 +17,13 @@ services:
       - redis
 
   frontend:
-    image: node:20-alpine
-    working_dir: /app
-    command: ["sh", "-lc", "echo 'Frontend service scaffolded. Add React app startup command.' && tail -f /dev/null"]
+    build:
+      context: .
+      dockerfile: frontend/react-app/Dockerfile
+    working_dir: /workspace/frontend/react-app
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]
     volumes:
-      - ./frontend/react-app:/app
+      - .:/workspace
     env_file:
       - .env
     ports:
