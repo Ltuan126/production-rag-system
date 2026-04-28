@@ -1,12 +1,30 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8000'
 
 export default function App() {
   const [question, setQuestion] = useState('How does the RAG system work?')
   const [result, setResult] = useState(null)
+  const [documents, setDocuments] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    const loadDocuments = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/documents`)
+        if (!response.ok) {
+          return
+        }
+
+        setDocuments(await response.json())
+      } catch {
+        setDocuments(null)
+      }
+    }
+
+    loadDocuments()
+  }, [])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -43,6 +61,22 @@ export default function App() {
           A practical full-stack starting point for ingestion, retrieval, caching, and response
           delivery.
         </p>
+        {documents ? (
+          <div className="stats-row">
+            <div className="stat-card">
+              <strong>{documents.total_documents}</strong>
+              <span>documents</span>
+            </div>
+            <div className="stat-card">
+              <strong>{documents.total_paragraphs}</strong>
+              <span>paragraphs</span>
+            </div>
+            <div className="stat-card">
+              <strong>{documents.total_characters}</strong>
+              <span>characters</span>
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <section className="panel query-panel">
@@ -85,7 +119,22 @@ export default function App() {
             </div>
           </>
         ) : (
-          <p className="placeholder">Submit a question to see retrieved context and the answer.</p>
+          <>
+            <p className="placeholder">Submit a question to see retrieved context and the answer.</p>
+            {documents?.documents?.length ? (
+              <div className="document-list">
+                <h3>Loaded documents</h3>
+                {documents.documents.map((document) => (
+                  <div key={document.path} className="document-item">
+                    <strong>{document.path}</strong>
+                    <span>
+                      {document.paragraphs} paragraphs · {document.characters} chars
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </>
         )}
       </section>
     </main>
