@@ -16,3 +16,16 @@ class QueryResponse(BaseModel):
     question: str
     answer: str
     sources: list[SourceChunk]
+
+
+class DocumentInfo(BaseModel):
+    path: str
+    paragraphs: int
+    characters: int
+
+
+class DocumentListResponse(BaseModel):
+    documents: list[DocumentInfo]
+    total_documents: int
+    total_paragraphs: int
+    total_characters: int
