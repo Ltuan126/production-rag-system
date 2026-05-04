@@ -26,6 +26,25 @@ export default function App() {
     loadDocuments()
   }, [])
 
+  const handleReindex = async () => {
+    setLoading(true)
+    try {
+      const r = await fetch(`${backendUrl}/api/ingest`, { method: 'POST' })
+      if (!r.ok) throw new Error('Failed to schedule reindex')
+      // poll for new index briefly
+      setTimeout(async () => {
+        try {
+          const resp = await fetch(`${backendUrl}/api/documents`)
+          if (resp.ok) setDocuments(await resp.json())
+        } catch {}
+        setLoading(false)
+      }, 1100)
+    } catch (err) {
+      setLoading(false)
+      setError(err.message)
+    }
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     setLoading(true)
@@ -89,9 +108,14 @@ export default function App() {
             rows={5}
             placeholder="Ask about architecture, onboarding, or any document you've added."
           />
-          <button type="submit" disabled={loading}>
-            {loading ? 'Searching...' : 'Run retrieval'}
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button type="submit" disabled={loading}>
+              {loading ? 'Searching...' : 'Run retrieval'}
+            </button>
+            <button type="button" onClick={handleReindex} disabled={loading}>
+              Re-index documents
+            </button>
+          </div>
         </form>
       </section>
 
