@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.env
+.DS_Store
+node_modules/
+dist/
+build/
+data/index.json
+.venv
+venv_local/
