@@ -1,8 +1,10 @@
 # Local Development & Testing Guide
 
-## 🚀 Quick Start (3 steps)
+## 🚀 Quick Start - Simple 2-Terminal Setup
 
-### Step 1: Setup (2 min)
+### Prerequisites: Setup (One Time Only)
+
+**If you haven't set up yet, run this once:**
 
 ```bash
 # Clone repo
@@ -39,17 +41,56 @@ npm run dev
 # App ready at http://localhost:3000
 ```
 
-### Step 3: Test
+## ⚡ Run Backend & Frontend (Every Time)
 
-1. Open `http://localhost:3000` in browser
-2. You should see:
-   - Hero section with "Production RAG System"
-   - Document stats (1 document, 4 paragraphs, ~XXX characters)
-   - Query form with "Run retrieval" button
+Open 2 terminal windows and run these commands:
+
+**Terminal 1 - Backend (stays running):**
+```bash
+cd backend
+python -m uvicorn main:app --reload --port 8000
+```
+You should see: `Application startup complete` ✓
+
+**Terminal 2 - Frontend (stays running):**
+```bash
+cd frontend/react-app
+npm run dev
+```
+You should see: `VITE v... ready in ... ms` ✓
+
+Then open `http://localhost:3000` in your browser.
 
 ---
 
-## 🧪 Test Scenarios
+## ✅ How to Test Everything Works
+
+### Test 1: Frontend Loads Correctly
+- Open http://localhost:3000
+- You should see the RAG System UI with:
+  - Hero section with title "Production RAG System"
+  - Stats showing document count and paragraph count
+  - Query input form
+
+### Test 2: Query Works End-to-End
+1. In the UI, type a question (e.g., "What is the system about?")
+2. Click "Run retrieval"
+3. Wait 1-2 seconds
+4. You should see the AI response + source documents below
+
+### Test 3: Backend API Directly (Optional)
+```bash
+# In another terminal, test backend directly:
+curl -X POST http://localhost:8000/query \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What is the system?"}'
+
+# Expected response: {"answer": "...", "sources": [...]}
+```
+
+---
+
+## 🧪 Test Scenarios (Optional)
 
 ### Scenario 1: Basic Query
 ```
