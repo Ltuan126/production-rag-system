@@ -9,4 +9,5 @@ dist/
 build/
 data/index.json
 .venv
+backend/package-lock.json
 venv_local/
