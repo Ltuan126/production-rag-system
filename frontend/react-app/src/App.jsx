@@ -4,6 +4,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8000'
 
 export default function App() {
   const [question, setQuestion] = useState('How does the RAG system work?')
+  const [topK, setTopK] = useState(4)
   const [result, setResult] = useState(null)
   const [documents, setDocuments] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -56,7 +57,7 @@ export default function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ question, top_k: 4 }),
+        body: JSON.stringify({ question, top_k: topK }),
       })
 
       if (!response.ok) {
@@ -108,6 +109,18 @@ export default function App() {
             rows={5}
             placeholder="Ask about architecture, onboarding, or any document you've added."
           />
+          <div className="query-controls">
+            <label htmlFor="top-k">Top K sources</label>
+            <input
+              id="top-k"
+              type="range"
+              min={1}
+              max={10}
+              value={topK}
+              onChange={(event) => setTopK(Number(event.target.value))}
+            />
+            <span>{topK}</span>
+          </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button type="submit" disabled={loading}>
               {loading ? 'Searching...' : 'Run retrieval'}
@@ -124,6 +137,16 @@ export default function App() {
           <h2>Answer</h2>
           <span>{result ? `${result.sources.length} sources` : 'No query yet'}</span>
         </div>
+
+        {result ? (
+          <div className="result-meta">
+            <span className="meta-pill">top_k: {result.top_k}</span>
+            <span className="meta-pill">{result.took_ms} ms</span>
+            <span className={`meta-pill ${result.cached ? 'cache-hit' : 'cache-miss'}`}>
+              {result.cached ? 'cache hit' : 'cache miss'}
+            </span>
+          </div>
+        ) : null}
 
         {error ? <p className="error">{error}</p> : null}
 
