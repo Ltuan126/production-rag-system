@@ -16,6 +16,9 @@ class QueryResponse(BaseModel):
     question: str
     answer: str
     sources: list[SourceChunk]
+    top_k: int
+    cached: bool = False
+    took_ms: int
 
 
 class DocumentInfo(BaseModel):
