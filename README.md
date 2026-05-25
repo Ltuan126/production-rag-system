@@ -1,23 +1,31 @@
 # Production RAG System
 
-Lightweight Retrieval-Augmented Generation starter.
+Lightweight Retrieval-Augmented Generation (RAG) starter: a minimal full-stack app
+for ingesting documents, building a local index, retrieving relevant chunks, and
+generating answers.
 
-## Development Quickstart
+Prerequisites
+-------------
+- Docker & Docker Compose (for production compose)
+- Node.js 20+ and npm (for frontend dev)
+- Python 3.11+ (for backend dev)
 
-1. Create & activate a Python venv
+Local development (fast)
+------------------------
+1. Create & activate a Python virtualenv
 
 ```powershell
 python -m venv venv
 venv\Scripts\Activate.ps1
 ```
 
-2. Install backend deps
+2. Install backend dependencies
 
 ```powershell
 pip install -r backend/requirements.txt
 ```
 
-3. Install frontend deps
+3. Install frontend dependencies
 
 ```powershell
 cd frontend/react-app
@@ -25,45 +33,57 @@ npm ci
 cd ../..
 ```
 
-4. Run services (two terminals):
+4. Run backend + frontend in two terminals
 
 ```powershell
-# Terminal A - backend
+# Terminal 1
 cd backend
 python -m uvicorn main:app --reload --port 8000
 
-# Terminal B - frontend
+# Terminal 2
 cd frontend/react-app
 npm run dev
 ```
 
-## Production deployment (docker-compose)
+Production (Docker Compose)
+--------------------------
+This repository includes `docker-compose.prod.yml` which builds the backend image
+and serves the frontend `dist` via Nginx (`Dockerfile.prod` + `nginx.conf`).
 
-This repo includes a production-ready compose that builds the backend image and serves the frontend static build via Nginx.
-
-To build and run locally with Docker Compose:
+To run the production compose locally:
 
 ```bash
 docker compose -f docker-compose.prod.yml up --build -d
 
-# Visit http://localhost:3000 for the frontend
-# Backend API: http://localhost:8000/api/
+# Frontend: http://localhost:3000
+# Backend: http://localhost:8000/api/
 ```
 
-Notes:
-- The frontend production image is defined in `frontend/react-app/Dockerfile.prod` and served with Nginx using `frontend/react-app/nginx.conf`.
-- The compose file includes `redis` and a `chroma` service used by the retriever. For lightweight testing you can remove them if not needed.
+Notes
+-----
+- The production frontend is a static build served by Nginx; the dev Dockerfile
+	used previously ran the Vite dev server and is not production-ready.
+- `docker-compose.prod.yml` includes `redis` and `chroma` services used by the
+	retriever; you can remove or replace them depending on your target infra.
 
-## CI (GitHub Actions)
+CI (GitHub Actions)
+--------------------
+We added a minimal CI workflow at `.github/workflows/ci.yml` that runs on pushes
+and PRs to `main`. It performs:
 
-We added a basic CI workflow at `.github/workflows/ci.yml` that runs on pushes and PRs to `main`:
+- Backend: install `backend/requirements.txt` and run `backend/ci_smoke.py`.
+- Frontend: `npm ci` and `npm run build` in `frontend/react-app`.
 
-- `build-backend`: installs Python dependencies and runs the backend smoke test (`backend/ci_smoke.py`).
-- `build-frontend`: installs Node dependencies and runs `npm run build`.
+This CI is designed for learning/testing only (no secrets). For real deploys
+you'll add registry credentials and deployment steps.
 
-This CI is intentionally minimal so interns can learn the flow: checkout → install → build → smoke test. No secrets or registry access are required.
+Troubleshooting
+---------------
+- If the frontend can't reach the backend in Docker Compose, check `VITE_BACKEND_URL`
+	in `docker-compose.prod.yml` or use `docker compose ps` to confirm service names.
+- If tests fail in CI, reproduce locally by running the same commands listed in
+	`.github/workflows/ci.yml`.
 
-## Next steps (optional)
+If you want, I can push the branch and open a PR, or add a deploy step to push
+images to Docker Hub / ACR (you'll need to provide registry credentials).
 
-- Add a deploy step to push images to a registry (Docker Hub / ACR) and deploy to your target environment (VM, Kubernetes, or a managed service). That requires registry credentials.
-- Add integration tests that exercise the full end-to-end flow.
