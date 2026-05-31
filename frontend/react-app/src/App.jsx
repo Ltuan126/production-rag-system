@@ -9,6 +9,8 @@ export default function App() {
   const [documents, setDocuments] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [copied, setCopied] = useState(false)
+  const [expanded, setExpanded] = useState(() => new Set())
 
   useEffect(() => {
     const loadDocuments = async () => {
@@ -70,6 +72,26 @@ export default function App() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const copyAnswer = async () => {
+    if (!result?.answer) return
+    try {
+      await navigator.clipboard.writeText(result.answer)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // ignore
+    }
+  }
+
+  const toggleExpand = (key) => {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
   }
 
   return (
@@ -145,6 +167,9 @@ export default function App() {
             <span className={`meta-pill ${result.cached ? 'cache-hit' : 'cache-miss'}`}>
               {result.cached ? 'cache hit' : 'cache miss'}
             </span>
+            <button className="copy-btn" onClick={copyAnswer} aria-label="Copy answer">
+              {copied ? 'Copied' : 'Copy answer'}
+            </button>
           </div>
         ) : null}
 
@@ -154,15 +179,35 @@ export default function App() {
           <>
             <p className="answer">{result.answer}</p>
             <div className="sources">
-              {result.sources.map((source) => (
-                <article key={`${source.source}-${source.score}`} className="source-card">
-                  <div className="source-meta">
-                    <strong>{source.source}</strong>
-                    <span>{source.score.toFixed(2)}</span>
-                  </div>
-                  <p>{source.content}</p>
-                </article>
-              ))}
+              {result.sources.map((source, idx) => {
+                const key = `${source.source}-${idx}`
+                const isExpanded = expanded.has(key)
+                const preview = source.content.length > 260 ? source.content.slice(0, 260) + '…' : source.content
+                return (
+                  <article key={key} className={`source-card ${isExpanded ? 'expanded' : 'collapsed'}`}>
+                    <div className="source-meta">
+                      <strong>{source.source}</strong>
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <span>{source.score.toFixed(2)}</span>
+                        <button className="small-btn" onClick={() => toggleExpand(key)}>
+                          {isExpanded ? 'Show less' : 'Show more'}
+                        </button>
+                        <button
+                          className="small-btn"
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(source.content)
+                            } catch {}
+                          }}
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    </div>
+                    <p>{isExpanded ? source.content : preview}</p>
+                  </article>
+                )
+              })}
             </div>
           </>
         ) : (
