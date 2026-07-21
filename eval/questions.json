@@ -1,0 +1,197 @@
+{
+  "description": "Retrieval evaluation set. Each item has a question, the document that contains the answer, and a literal answer span. A retrieved chunk counts as relevant if it comes from expected_source AND contains answer_span (case-insensitive, whitespace-normalized). Span containment is used instead of chunk ids so the same ground truth works across different chunking configurations.",
+  "questions": [
+    {
+      "id": "q01",
+      "question": "How does the retriever rank document chunks?",
+      "expected_source": "architecture.md",
+      "answer_span": "Ranks by token overlap using Counter"
+    },
+    {
+      "id": "q02",
+      "question": "What API endpoint do I call to submit a query and get an answer?",
+      "expected_source": "architecture.md",
+      "answer_span": "Submit query and get answer with sources"
+    },
+    {
+      "id": "q03",
+      "question": "What happens when the LLM is unavailable?",
+      "expected_source": "architecture.md",
+      "answer_span": "template-based responses when LLM unavailable"
+    },
+    {
+      "id": "q04",
+      "question": "Where does the backend try to connect to Ollama in production mode?",
+      "expected_source": "architecture.md",
+      "answer_span": "local Ollama at localhost:11434"
+    },
+    {
+      "id": "q05",
+      "question": "How does the LLM client pick which response template to use?",
+      "expected_source": "architecture.md",
+      "answer_span": "detects question type (how/why/architecture)"
+    },
+    {
+      "id": "q06",
+      "question": "What does the cache layer store?",
+      "expected_source": "architecture.md",
+      "answer_span": "stores recent query results"
+    },
+    {
+      "id": "q07",
+      "question": "What are the main sections of the frontend page?",
+      "expected_source": "architecture.md",
+      "answer_span": "Title and document statistics"
+    },
+    {
+      "id": "q08",
+      "question": "What request does the frontend send when a user asks a question?",
+      "expected_source": "architecture.md",
+      "answer_span": "with question + top_k"
+    },
+    {
+      "id": "q09",
+      "question": "What layout techniques are used for styling the frontend?",
+      "expected_source": "architecture.md",
+      "answer_span": "CSS Grid and Flexbox"
+    },
+    {
+      "id": "q10",
+      "question": "How is the frontend deployed in production?",
+      "expected_source": "architecture.md",
+      "answer_span": "served as static build"
+    },
+    {
+      "id": "q11",
+      "question": "How are documents split into paragraphs for indexing?",
+      "expected_source": "architecture.md",
+      "answer_span": "separated by blank lines"
+    },
+    {
+      "id": "q12",
+      "question": "Does the UI support dark mode?",
+      "expected_source": "architecture.md",
+      "answer_span": "dark mode consideration with CSS variables"
+    },
+    {
+      "id": "q13",
+      "question": "What runs the backend during local development?",
+      "expected_source": "architecture.md",
+      "answer_span": "FastAPI with uvicorn reload"
+    },
+    {
+      "id": "q14",
+      "question": "What Python version is required to run the project?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "Python 3.11 or higher"
+    },
+    {
+      "id": "q15",
+      "question": "What Node.js version do I need?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "Node.js 18+ with npm"
+    },
+    {
+      "id": "q16",
+      "question": "How do I activate the virtual environment on Windows?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "venv\\Scripts\\Activate.ps1"
+    },
+    {
+      "id": "q17",
+      "question": "On which port does Chroma run in docker compose?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "Chroma: localhost:8001"
+    },
+    {
+      "id": "q18",
+      "question": "Which file formats are supported for ingested documents?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "Supported formats"
+    },
+    {
+      "id": "q19",
+      "question": "How can I trigger re-indexing from the command line with curl?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "curl -X POST http://localhost:8000/api/ingest"
+    },
+    {
+      "id": "q20",
+      "question": "Where is the document index file stored on disk?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "data/index.json"
+    },
+    {
+      "id": "q21",
+      "question": "How large is the initial llama2 model download?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "downloads the model (~4GB)"
+    },
+    {
+      "id": "q22",
+      "question": "Which Ollama models are supported besides llama2?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "neural-chat"
+    },
+    {
+      "id": "q23",
+      "question": "How many parameters does the default llama2 model have?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "Balanced performance, 7B parameters"
+    },
+    {
+      "id": "q24",
+      "question": "How do I run the backend with a production ASGI server?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "gunicorn -w 4 -k uvicorn.workers.UvicornWorker"
+    },
+    {
+      "id": "q25",
+      "question": "What should I do if the port is already in use?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "kill existing process"
+    },
+    {
+      "id": "q26",
+      "question": "What command builds the optimized frontend bundle?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "Build optimized bundle"
+    },
+    {
+      "id": "q27",
+      "question": "Which environment variable selects the vector database provider?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "VECTOR_DB_PROVIDER=chroma"
+    },
+    {
+      "id": "q28",
+      "question": "What is the default OpenAI model configured in the environment file?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "OPENAI_MODEL=gpt-4o-mini"
+    },
+    {
+      "id": "q29",
+      "question": "What happens if Ollama is not connecting?",
+      "expected_source": "setup-deployment.md",
+      "answer_span": "backend auto-fallbacks to mock"
+    },
+    {
+      "id": "q30",
+      "question": "Which directory does the retriever scan for local documents?",
+      "expected_source": "sample.md",
+      "answer_span": "scans local documents in `data/documents`"
+    },
+    {
+      "id": "q31",
+      "question": "What does the frontend render alongside the generated answer?",
+      "expected_source": "sample.md",
+      "answer_span": "renders the generated answer together with source snippets"
+    },
+    {
+      "id": "q32",
+      "question": "What kind of application is the frontend?",
+      "expected_source": "sample.md",
+      "answer_span": "React application that submits questions to the backend"
+    }
+  ]
+}

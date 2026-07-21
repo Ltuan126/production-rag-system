@@ -1,0 +1,31 @@
+{
+  "llm_mode": "template_mock",
+  "retrieval_config": "fixed512+bm25",
+  "cache": "in-memory (per-process dict)",
+  "phases": {
+    "cold": {
+      "requests": 32,
+      "mean_ms": 6.78,
+      "p50_ms": 3.19,
+      "p95_ms": 25.24,
+      "max_ms": 27.52,
+      "cache_hit_rate": 0.0
+    },
+    "warm": {
+      "requests": 32,
+      "mean_ms": 3.58,
+      "p50_ms": 2.71,
+      "p95_ms": 8.38,
+      "max_ms": 15.91,
+      "cache_hit_rate": 1.0
+    },
+    "mixed_zipf": {
+      "requests": 200,
+      "mean_ms": 3.74,
+      "p50_ms": 2.32,
+      "p95_ms": 13.83,
+      "max_ms": 28.95,
+      "cache_hit_rate": 0.845
+    }
+  }
+}

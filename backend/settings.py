@@ -18,6 +18,11 @@ class Settings:
     app_name: str = "Production RAG System"
     app_version: str = "0.1.0"
     documents_dir: Path = PROJECT_ROOT / "data" / "documents"
+    # Retrieval config. Defaults are the best-scoring combination on
+    # eval/questions.json (see data/processed/retrieval_eval.json);
+    # the previous behavior is CHUNK_STRATEGY=paragraph SCORING=overlap.
+    chunk_strategy: str = os.getenv("CHUNK_STRATEGY", "fixed512")
+    scoring: str = os.getenv("SCORING", "bm25")
     redis_url: str = os.getenv("REDIS_URL", "redis://redis:6379/0")
     cors_origins: tuple[str, ...] = _split_csv(
         os.getenv("CORS_ORIGINS"),

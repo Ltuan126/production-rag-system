@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict
 
+from retriever.chunking import split_chunks
 from retriever.vector_store import VectorStoreRetriever
 from settings import settings
 
@@ -35,19 +36,20 @@ class Indexer:
             if not text:
                 continue
 
-            for i, paragraph in enumerate(retriever._split_paragraphs(text)):
-                token_counts = retriever._tokens(paragraph)
+            for i, chunk_text in enumerate(split_chunks(text, settings.chunk_strategy)):
+                token_counts = retriever._tokens(chunk_text)
                 chunks.append(
                     ChunkRecord(
                         id=f"{path.name}::{i}",
                         source=path.name,
-                        content=paragraph,
+                        content=chunk_text,
                         tokens=dict(token_counts),
                     )
                 )
 
         payload = {
             "generated_at": datetime.utcnow().isoformat() + "Z",
+            "chunk_strategy": settings.chunk_strategy,
             "chunks": [asdict(c) for c in chunks],
             "stats": {"documents": len({c.source for c in chunks}), "chunks": len(chunks)},
         }
