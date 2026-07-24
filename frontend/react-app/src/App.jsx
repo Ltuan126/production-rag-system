@@ -94,43 +94,43 @@ export default function App() {
     })
   }
 
+  const maxScore = result?.sources?.length ? Math.max(...result.sources.map((s) => s.score), 0.0001) : 1
+
   return (
     <main className="shell">
+      <div className="title-strip">
+        <span><span className="dot">●</span> RAG / QUERY CONSOLE</span>
+        <span>{documents ? `${documents.total_documents} DOCS INDEXED` : '— DOCS INDEXED'}</span>
+      </div>
+
       <section className="hero">
-        <p className="eyebrow">Production RAG System</p>
-        <h1>Ask questions over your documents with a focused retrieval pipeline.</h1>
+        <p className="eyebrow">Ask &amp; Retrieve</p>
+        <h1>Ask a question. Trace the retrieval.</h1>
         <p className="lede">
-          A practical full-stack starting point for ingestion, retrieval, caching, and response
-          delivery.
+          Submit a question and see exactly which document chunks were retrieved to answer it,
+          ranked by relevance score.
         </p>
         {documents ? (
-          <div className="stats-row">
-            <div className="stat-card">
-              <strong>{documents.total_documents}</strong>
-              <span>documents</span>
-            </div>
-            <div className="stat-card">
-              <strong>{documents.total_paragraphs}</strong>
-              <span>paragraphs</span>
-            </div>
-            <div className="stat-card">
-              <strong>{documents.total_characters}</strong>
-              <span>characters</span>
-            </div>
-          </div>
+          <p className="corpus-note">
+            Indexed corpus: <strong>{documents.total_documents}</strong> documents ·{' '}
+            <strong>{documents.total_paragraphs}</strong> chunks
+          </p>
         ) : null}
       </section>
 
-      <section className="panel query-panel">
+      <section className="panel corner-frame query-panel">
+        <span className="panel-tag">Input</span>
         <form onSubmit={handleSubmit} className="query-form">
           <label htmlFor="question">Your question</label>
-          <textarea
-            id="question"
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            rows={5}
-            placeholder="Ask about architecture, onboarding, or any document you've added."
-          />
+          <div className="prompt-field">
+            <textarea
+              id="question"
+              value={question}
+              onChange={(event) => setQuestion(event.target.value)}
+              rows={5}
+              placeholder="Ask about architecture, onboarding, or any document you've added."
+            />
+          </div>
           <div className="query-controls">
             <label htmlFor="top-k">Top K sources</label>
             <input
@@ -143,9 +143,15 @@ export default function App() {
             />
             <span>{topK}</span>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="button-row">
             <button type="submit" disabled={loading}>
-              {loading ? 'Searching...' : 'Run retrieval'}
+              {loading ? (
+                <>
+                  <span className="spinner" /> Searching
+                </>
+              ) : (
+                'Run retrieval'
+              )}
             </button>
             <button type="button" onClick={handleReindex} disabled={loading}>
               Re-index documents
@@ -154,7 +160,8 @@ export default function App() {
         </form>
       </section>
 
-      <section className="panel answer-panel">
+      <section className="panel corner-frame answer-panel">
+        <span className="panel-tag">Output</span>
         <div className="panel-header">
           <h2>Answer</h2>
           <span>{result ? `${result.sources.length} sources` : 'No query yet'}</span>
@@ -173,7 +180,7 @@ export default function App() {
           </div>
         ) : null}
 
-        {error ? <p className="error">{error}</p> : null}
+        {error ? <p className="error">! {error}</p> : null}
 
         {result ? (
           <>
@@ -183,14 +190,21 @@ export default function App() {
                 const key = `${source.source}-${idx}`
                 const isExpanded = expanded.has(key)
                 const preview = source.content.length > 260 ? source.content.slice(0, 260) + '…' : source.content
+                const fillPct = Math.max(6, Math.round((source.score / maxScore) * 100))
                 return (
-                  <article key={key} className={`source-card ${isExpanded ? 'expanded' : 'collapsed'}`}>
+                  <article key={key} className={`source-card corner-frame ${isExpanded ? 'expanded' : 'collapsed'}`}>
+                    <span className="source-tag">Specimen {String(idx + 1).padStart(2, '0')}</span>
                     <div className="source-meta">
                       <strong>{source.source}</strong>
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <span>{source.score.toFixed(2)}</span>
+                      <div className="source-actions">
+                        <div className="score-gauge">
+                          <div className="score-track">
+                            <div className="score-fill" style={{ width: `${fillPct}%` }} />
+                          </div>
+                          <span className="score-value">{source.score.toFixed(2)}</span>
+                        </div>
                         <button className="small-btn" onClick={() => toggleExpand(key)}>
-                          {isExpanded ? 'Show less' : 'Show more'}
+                          {isExpanded ? 'Less' : 'More'}
                         </button>
                         <button
                           className="small-btn"
@@ -211,22 +225,7 @@ export default function App() {
             </div>
           </>
         ) : (
-          <>
-            <p className="placeholder">Submit a question to see retrieved context and the answer.</p>
-            {documents?.documents?.length ? (
-              <div className="document-list">
-                <h3>Loaded documents</h3>
-                {documents.documents.map((document) => (
-                  <div key={document.path} className="document-item">
-                    <strong>{document.path}</strong>
-                    <span>
-                      {document.paragraphs} paragraphs · {document.characters} chars
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </>
+          <p className="placeholder">// submit a question above to see the retrieved chunks and generated answer</p>
         )}
       </section>
     </main>
